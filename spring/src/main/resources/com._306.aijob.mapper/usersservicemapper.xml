@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com._306.aijob.mapper.userservicemapper">
+
+    <insert id="insert_question" useGeneratedKeys="true" keyProperty="questionId">
+        insert into question(username,question,answer)
+        values(#{username},#{question},#{answer})
+    </insert>
+    <insert id="insert_question_requirement">
+        insert into question_requirements(question_id,job, tone, extrainfo)
+        values(#{questionId},#{job},#{tone},#{extrainfo})
+    </insert>
+
+    <update id="hate_question">
+        UPDATE question
+        set hate = 1 - hate
+        where question_id = #{question_id}
+    </update>
+
+    <select id="is_hate" resultType="Integer">
+        select hate
+        from question
+        where question_id = #{question_id}
+    </select>
+
+    <update id="star_question">
+        UPDATE question
+        set star = 1 - star
+        where question_id = #{question_id}
+    </update>
+
+    <select id="is_star" resultType="Integer">
+        select star
+        from question
+        where question_id = #{question_id}
+    </select>
+
+    <select id="get_questions" resultType="com._306.aijob.pojo.answerclass">
+        select question_id,question,answer
+        from question
+        where username = #{username}
+          and star = 1
+            limit #{start_count},5
+    </select>
+
+    <select id="get_questionssearch" resultType="com._306.aijob.pojo.answerclass">
+        select question_id,question,answer
+        from question
+        where username = #{username}
+          and question like CONCAT('%',#{search},'%')
+          and star = 1
+            limit #{start_count},5
+    </select>
+
+    <select id="countquestion" resultType="Integer">
+        select count(*)
+        from question
+        where username = #{username}
+          and star = 1
+    </select>
+
+    <select id="countquestionsearch" resultType="Integer">
+        select count(*)
+        from question
+        where username = #{username}
+          and question like CONCAT('%',#{search},'%')
+          and star = 1
+    </select>
+
+    <select id="counthistory" resultType="Integer">
+        select count(*)
+        from question
+        where username = #{username}
+    </select>
+
+    <select id="counthistorynsearch" resultType="Integer">
+        select count(*)
+        from question
+        where username = #{username}
+          and question like CONCAT('%',#{search},'%')
+    </select>
+
+    <select id="get_history" resultType="com._306.aijob.pojo.answerclass">
+        select question_id,question,answer
+        from question
+        where username = #{username}
+            limit #{start_count},5
+    </select>
+
+    <select id="get_historysearch" resultType="com._306.aijob.pojo.answerclass">
+        select question_id,question,answer
+        from question
+        where username = #{username}
+          and question like CONCAT('%',#{search},'%')
+            limit #{start_count},5
+    </select>
+
+</mapper>
