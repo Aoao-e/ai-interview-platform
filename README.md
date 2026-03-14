@@ -40,20 +40,21 @@ spring/src/main/resources/application.yml
 
 ```bash
 pip install -r requirements.txt
-
+```
 ### 3. 导入数据库
 
 执行：
 
 database.sql
 
-###4. 启动 Nginx
+
+### 4. 启动 Nginx
 
 进入 nginx 目录：
 
 nginx.exe
 
-###5. 启动服务
+### 5. 启动服务
 
 依次启动：
 
@@ -61,11 +62,10 @@ redis
 springboot
 python rag/main.py
 
+### 
 
-
-
-###
 如果有问题或可以优化的地方，欢迎提出建议。
 联系方式
 Email：aoaoo2025@163.com
+
 ###
