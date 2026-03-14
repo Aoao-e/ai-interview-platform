@@ -1,0 +1,20 @@
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  db: 0
+  password: null
+  key_prefix: "service:"
+  poll_seconds: 1.0
+
+worker:
+  threads: 4
+
+model:
+  api_key: ""
+  chat_model: "qwen-turbo"
+  embedding_model: "text-embedding-v4"
+
+rag:
+  chunk_size: 500
+  chunk_overlap: 80
+  top_k: 4

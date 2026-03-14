@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理面板</title>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --primary: #6366f1;
+            --primary-600: #4f46e5;
+            --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+            --radius: 14px;
+            --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 15% 0%, #eef2ff 0%, transparent 60%),
+                        radial-gradient(1200px 600px at 85% 10%, #fce7f3 0%, transparent 55%),
+                        var(--bg);
+            font-family: var(--font);
+        }
+
+        body, h1, h2, a, p, button, span, div {
+            font-family: var(--font);
+        }
+
+        #container {
+            max-width: 1100px;
+            width: calc(100% - 32px);
+            margin: 18px auto;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 40%, #2563eb 100%);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 16px;
+            align-items: center;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 0.5px;
+            font-size: 18px;
+        }
+        .navbar .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .navbar a {
+            color: rgba(255, 255, 255, 0.95);
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .panel {
+            margin: 18px 0 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        .panel h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            background: #fff;
+        }
+        .card .label {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .card .value {
+            margin-top: 8px;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer {
+            color: var(--muted);
+            text-align: center;
+            padding: 18px 0;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="navbar">
+            <h1>管理面板</h1>
+            <div class="nav-actions">
+                <a href="/login" id="loginLink">登录</a>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>实时数据概览</h2>
+            <p class="muted">今日数据</p>
+            <div class="cards">
+                <div class="card">
+                    <div class="label">用户数</div>
+                    <div class="value" id="userCount">-</div>
+                </div>
+                <div class="card">
+                    <div class="label">今日访问量</div>
+                    <div class="value" id="todayVisits">-</div>
+                </div>
+                <div class="card">
+                    <div class="label">提问数</div>
+                    <div class="value" id="questionCount">-</div>
+                </div>
+                <div class="card">
+                    <div class="label">回答数</div>
+                    <div class="value" id="answerCount">-</div>
+                </div>
+                
+                
+                <div class="card">
+                    <div class="label">收藏数</div>
+                    <div class="value" id="favoriteCount">-</div>
+                </div>
+                <div class="card">
+                    <div class="label">点踩数</div>
+                    <div class="value" id="downvoteCount">-</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p id="dataRange">以上数据从今日00:00截止到-</p>
+        </footer>
+    </div>
+
+    <script>
+        const ADMIN_STATS_API_URL = '/api/admin/stats';
+
+        function safeText(value) {
+            if (value === null || value === undefined) return '-';
+            if (typeof value === 'string' && value.trim() === '') return '-';
+            return String(value);
+        }
+
+        function pickNumber(data, keys) {
+            for (let i = 0; i < keys.length; i++) {
+                const val = data && data[keys[i]];
+                if (val !== null && val !== undefined && val !== '') return val;
+            }
+            return null;
+        }
+
+        function pickText(data, keys) {
+            for (let i = 0; i < keys.length; i++) {
+                const val = data && data[keys[i]];
+                if (val !== null && val !== undefined && val !== '') return val;
+            }
+            return null;
+        }
+
+        function pad2(num) {
+            return num < 10 ? '0' + num : String(num);
+        }
+
+        function formatDateTime(date) {
+            const y = date.getFullYear();
+            const m = pad2(date.getMonth() + 1);
+            const d = pad2(date.getDate());
+            const h = pad2(date.getHours());
+            const mi = pad2(date.getMinutes());
+            return y + '-' + m + '-' + d + ' ' + h + ':' + mi;
+        }
+
+        function formatTodayStart() {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            return formatDateTime(d);
+        }
+
+        function normalizeTimestamp(raw) {
+            if (raw === null || raw === undefined || raw === '') return null;
+            if (raw instanceof Date) return raw.getTime();
+            if (typeof raw === 'number') {
+                return raw < 1e12 ? raw * 1000 : raw;
+            }
+            if (typeof raw === 'string') {
+                const trimmed = raw.trim();
+                if (/^\\d+$/.test(trimmed)) {
+                    const num = Number(trimmed);
+                    return num < 1e12 ? num * 1000 : num;
+                }
+                const parsed = Date.parse(trimmed);
+                if (!Number.isNaN(parsed)) return parsed;
+                return trimmed;
+            }
+            return null;
+        }
+
+        function formatLastDataTime(raw) {
+            const normalized = normalizeTimestamp(raw);
+            if (normalized === null) return '-';
+            if (typeof normalized === 'string') return normalized;
+            const dt = new Date(normalized);
+            if (Number.isNaN(dt.getTime())) return '-';
+            return formatDateTime(dt);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+
+            if (token && username) {
+                const nav = document.querySelector('.nav-actions');
+                if (nav) {
+                    nav.innerHTML = `
+                        <a href="#" id="logoutLink">返回</a>
+                    `;
+                    const logoutLink = document.getElementById('logoutLink');
+                    if (logoutLink) {
+                        logoutLink.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            localStorage.clear();
+                            window.location.href = '/index';
+                        });
+                    }
+                }
+            }
+
+            if (!token) {
+                alert('请登录');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch(ADMIN_STATS_API_URL, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function (res) {
+                if (!res.ok) throw new Error('HTTP状态码: ' + res.status);
+                return res.json();
+            })
+            .then(function (reps) {
+                const data = reps && reps.data ? reps.data : {};
+
+                const userCount = pickNumber(data, ['user_total']);
+                const todayVisits = pickNumber(data, ['today_count']);
+                const answerCount = pickNumber(data, ['answer_total']);
+                const questionCount = pickNumber(data, ['question_count']);
+                const favoriteCount = pickNumber(data, ['star_count']);
+                const downvoteCount = pickNumber(data, ['hate_count']);
+                const lastDataTime = new Date();
+                console.log(lastDataTime);
+                document.getElementById('userCount').textContent = safeText(userCount);
+                document.getElementById('todayVisits').textContent = safeText(todayVisits);
+                document.getElementById('answerCount').textContent = safeText(answerCount);
+                document.getElementById('questionCount').textContent = safeText(questionCount);
+                document.getElementById('favoriteCount').textContent = safeText(favoriteCount);
+                document.getElementById('downvoteCount').textContent = safeText(downvoteCount);
+                const rangeEl = document.getElementById('dataRange');
+                if (rangeEl) {
+                    rangeEl.textContent = '以上数据从' + formatTodayStart() + '截止到' + formatLastDataTime(lastDataTime);
+                }
+            })
+            .catch(function (err) {
+                console.error('请求失败:', err);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AI面试助手</title>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --primary: #6366f1;
+            --primary-600: #4f46e5;
+            --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+            --radius: 14px;
+            --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 15% 0%, #eef2ff 0%, transparent 60%),
+                        radial-gradient(1200px 600px at 85% 10%, #fce7f3 0%, transparent 55%),
+                        var(--bg);
+            font-family: var(--font);
+        }
+
+        body, h1, a, label, p, input, select, textarea, button, option {
+            font-family: var(--font);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 40%, #2563eb 100%);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 16px;
+            align-items: center;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 0.5px;
+            font-size: 18px;
+        }
+        .navbar .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .navbar a {
+            color: rgba(255, 255, 255, 0.95);
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .search-form {
+            margin: 18px 0 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px 16px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 90px 1fr 90px 1fr 90px 1fr;
+            gap: 30px 6px;
+            align-items: center;
+        }
+        .form-grid .span-all {
+            grid-column: 2 / -1;
+        }
+        .search-form label {
+            color: var(--muted);
+            font-weight: 600;
+            text-align: right;
+            justify-self: end;
+        }
+        .search-form input[type="text"], .search-form select, .search-form textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            background: #fff;
+            transition: border-color 120ms ease, box-shadow 120ms ease;
+        }
+        .search-form textarea {
+            resize: vertical;
+            min-height: 160px;
+        }
+        .search-form input[type="text"]:focus,
+        .search-form select:focus,
+        .search-form textarea:focus {
+            border-color: rgba(99, 102, 241, 0.55);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .btn {
+            border: 1px solid transparent;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-600);
+        }
+        .btn-ghost {
+            background: white;
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-ghost:hover {
+            background: #f9fafb;
+        }
+
+        .footer {
+            color: var(--muted);
+            text-align: center;
+            padding: 18px 0;
+            margin-top: 18px;
+        }
+
+        #container {
+            max-width: 1100px;
+            width: calc(100% - 32px);
+            margin: 18px auto;
+        }
+
+        @media (max-width: 820px) {
+            .form-grid {
+                grid-template-columns: 120px 1fr;
+            }
+            .form-grid .span-all {
+                grid-column: 2 / -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="navbar">
+            <h1>AI面试助手</h1>
+            <div class="nav-actions">
+                <a href="#" id="notebookLink">笔记本</a>
+                <a href="#" id="historyLink">历史记录</a>
+                <a href="/login">登录</a>
+            </div>
+        </div>
+
+        <form class="search-form" action="/search" method="post">
+            <div class="form-grid">
+                <label for="job">职位名称：</label>
+                <input type="text" id="job" name="job" placeholder="请输入职位名称">
+
+                <label for="tone">语气：</label>
+                <select id="tone" name="tone">
+                    <option value="1">专业</option>
+                    <option value="2">学术</option>
+                    <option value="3">对话式</option>
+                </select>
+
+                <label for="count">数量：</label>
+                <input type="text" id="count" name="count" placeholder="请输入数量（1-10）">
+
+                <label for="extraInfo">附加信息：</label>
+                <textarea class="span-all" id="extraInfo" name="extraInfo" placeholder="请输入附加信息"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">点击开始使用</button>
+                <button class="btn btn-ghost" type="reset">清空</button>
+            </div>
+        </form>
+
+        <footer class="footer">
+            <p>以上内容为AI生成，仅供参考</p>
+        </footer>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navActions = document.querySelector('.nav-actions');
+        if (!navActions) return;
+
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+        if (token && username) {
+            navActions.innerHTML = `
+                <a href="#" id="notebookLink">笔记本</a>
+                <a href="#" id="historyLink">历史记录</a>
+                <span style="color: rgba(255, 255, 255, 0.95); font-weight: 600;">Hello ${username}</span>
+                <a href="#" id="logoutLink">退出登录</a>
+            `;
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    localStorage.clear();
+                    window.location.href = '/index';
+                });
+            }
+        } else {
+            navActions.innerHTML = `
+                <a href="#" id="notebookLink">笔记本</a>
+                <a href="#" id="historyLink">历史记录</a>
+                <a href="/login">登录</a>
+            `;
+        }
+
+        const notebookLink = document.getElementById('notebookLink');
+        if (notebookLink) {
+            notebookLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                const currentToken = localStorage.getItem('token');
+                const currentUsername = localStorage.getItem('username');
+                if (currentToken && currentUsername) {
+                    fetch('/api/user/notebookcount', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + currentToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: currentUsername })
+                    })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('HTTP状态码: ' + res.status);
+                        return res.json();
+                    })
+                    .then(function (resp) {
+                        const raw = resp && (resp.count != null ? resp.count : (resp.total != null ? resp.total : (resp.totalCount != null ? resp.totalCount : resp.data)));
+                        const count = Number(raw);
+                        if (Number.isFinite(count)) {
+                            localStorage.setItem('notebook_total_count', String(count));
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('获取笔记本总数失败:', err);
+                    })
+                    .finally(function () {
+                        window.location.href = '/notebook';
+                    });
+                } else {
+                    alert('请登录');
+                    window.location.href = '/login';
+                }
+            });
+        }
+
+        const historyLink = document.getElementById('historyLink');
+        if (historyLink) {
+            historyLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                const currentToken = localStorage.getItem('token');
+                const currentUsername = localStorage.getItem('username');
+                if (currentToken && currentUsername) {
+                    const payload = {
+                        username: currentUsername,
+                        page: 1,
+                        search: ''
+                    };
+                    const countPromise = fetch('/api/user/historycount', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + currentToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: currentUsername })
+                    })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('HTTP状态码: ' + res.status);
+                        return res.json();
+                    })
+                    .then(function (resp) {
+                        const raw = resp && (resp.count != null ? resp.count : (resp.total != null ? resp.total : (resp.totalCount != null ? resp.totalCount : resp.data)));
+                        const count = Number(raw);
+                        if (Number.isFinite(count)) {
+                            localStorage.setItem('history_total_count', String(count));
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('获取历史记录总数失败:', err);
+                    });
+
+                    fetch('/api/user/history', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + currentToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('HTTP状态码: ' + res.status);
+                        return res.json();
+                    })
+                    .then(function (resp) {
+                        if (resp && resp.msg === 'success') {
+                            const answers = Array.isArray(resp.answers) ? resp.answers : [];
+                            try {
+                                localStorage.setItem('history_data', JSON.stringify(answers));
+                            } catch (e) {}
+                        }
+                        return countPromise;
+                    })
+                    .catch(function (err) {
+                        console.error('获取历史记录数据失败:', err);
+                    })
+                    .finally(function () {
+                        window.location.href = '/history';
+                    });
+                } else {
+                    alert('请登录');
+                    window.location.href = '/login';
+                }
+            });
+        }
+
+        try {
+            const saved = localStorage.getItem('searchFormData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                const jobEl = document.getElementById('job');
+                const toneEl = document.getElementById('tone');
+                const countEl = document.getElementById('count');
+                const extraInfoEl = document.getElementById('extraInfo');
+                if (jobEl && typeof data.job === 'string') jobEl.value = data.job;
+                if (toneEl && data.tone != null) toneEl.value = String(data.tone);
+                if (countEl && typeof data.count === 'string') countEl.value = data.count;
+                if (extraInfoEl && typeof data.extraInfo === 'string') extraInfoEl.value = data.extraInfo;
+            }
+        } catch (e) {
+        }
+
+        const form = document.querySelector('form.search-form');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const data = {
+                job: (document.getElementById('job') || {}).value || '',
+                tone: (document.getElementById('tone') || {}).value || '',
+                count: (document.getElementById('count') || {}).value || '',
+                extraInfo: (document.getElementById('extraInfo') || {}).value || ''
+            };
+            localStorage.setItem('searchFormData', JSON.stringify(data));
+
+            if (localStorage.getItem('token') === null) {
+                alert('请登录');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch('/api/user/qa', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(function (res) {
+                if (!res.ok) throw new Error('HTTP状态码: ' + res.status);
+                return res.json();
+            })
+            .then(function (resp) {
+                if (resp && resp.msg === 'success') {
+                    window.location.href = '/qa';
+                } else {
+                    console.log(resp);
+                }
+            })
+            .catch(function (err) {
+                console.error('请求失败:', err);
+            });
+        });
+    });
+</script>
+</body>
+</html>
+

@@ -1,0 +1,317 @@
+﻿<!--登录页面-->
+<!DOCTYPE html>
+<!-- 声明文档类型为HTML5 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 设置字符编码为UTF-8，支持中文显示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 设置视口，确保在移动设备上正确显示 -->
+    <title>用户登录</title>
+    <!-- 页面标题 -->
+    <style>
+        /* 重置默认样式，确保跨浏览器一致性 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* 页面主体样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* 设置字体族，优先使用系统字体 */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* 背景使用渐变色，从左上到右下 */
+            min-height: 100vh;
+            /* 最小高度为视窗高度 */
+            display: flex;
+            /* 使用Flex布局 */
+            justify-content: center;
+            /* 水平居中 */
+            align-items: center;
+            /* 垂直居中 */
+            padding: 20px;
+            /* 内边距，防止内容贴边 */
+        }
+        
+        /* 登录容器样式 */
+        .login-container {
+            background: white;
+            /* 白色背景 */
+            border-radius: 10px;
+            /* 圆角边框 */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            /* 添加阴影效果，增强立体感 */
+            padding: 40px;
+            /* 内边距 */
+            width: 100%;
+            /* 宽度占满父容器 */
+            max-width: 400px;
+            /* 最大宽度限制为400px */
+        }
+        
+        /* 登录头部样式 */
+        .login-header {
+            text-align: center;
+            /* 文字居中 */
+            margin-bottom: 30px;
+            /* 底部外边距 */
+        }
+        
+        .login-header h1 {
+            color: #333;
+            /* 深灰色文字 */
+            font-size: 28px;
+            /* 字体大小 */
+            margin-bottom: 10px;
+            /* 底部外边距 */
+        }
+        
+        .login-header p {
+            color: #666;
+            /* 灰色文字 */
+            font-size: 14px;
+            /* 字体大小 */
+        }
+        
+        /* 输入组样式 */
+        .input-group {
+            margin-bottom: 20px;
+            /* 底部外边距 */
+        }
+        
+        .input-group label {
+            display: block;
+            /* 块级元素 */
+            margin-bottom: 8px;
+            /* 底部外边距 */
+            color: #333;
+            /* 深灰色文字 */
+            font-weight: 500;
+            /* 字体粗细 */
+            font-size: 14px;
+            /* 字体大小 */
+        }
+        
+        .input-group input {
+            width: 100%;
+            /* 宽度占满父容器 */
+            padding: 12px 15px;
+            /* 内边距 */
+            border: 1px solid #ddd;
+            /* 浅灰色边框 */
+            border-radius: 5px;
+            /* 圆角边框 */
+            font-size: 16px;
+            /* 字体大小 */
+            transition: border-color 0.3s ease;
+            /* 边框颜色过渡动画 */
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            /* 移除默认焦点轮廓 */
+            border-color: #667eea;
+            /* 聚焦时边框颜色变为蓝色 */
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+            /* 添加聚焦阴影 */
+        }
+        
+        /* 登录按钮样式 */
+        .login-button {
+            width: 100%;
+            /* 宽度占满父容器 */
+            padding: 12px;
+            /* 内边距 */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* 背景使用与页面相同的渐变色 */
+            color: white;
+            /* 白色文字 */
+            border: none;
+            /* 无边框 */
+            border-radius: 5px;
+            /* 圆角边框 */
+            font-size: 16px;
+            /* 字体大小 */
+            font-weight: 600;
+            /* 字体粗细 */
+            cursor: pointer;
+            /* 鼠标悬停时显示手型光标 */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            /* 变换和阴影过渡动画 */
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            /* 鼠标悬停时向上轻微移动 */
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            /* 鼠标悬停时增加阴影 */
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+            /* 点击时恢复原位置 */
+        }
+        
+        /* 忘记密码链接容器 */
+        .forgot-password {
+            text-align: center;
+            /* 文字居中 */
+            margin-top: 20px;
+            /* 顶部外边距 */
+        }
+        
+        .forgot-password a {
+            color: #667eea;
+            /* 蓝色链接文字 */
+            text-decoration: none;
+            /* 移除下划线 */
+            font-size: 14px;
+            /* 字体大小 */
+            transition: color 0.3s ease;
+            /* 颜色过渡动画 */
+        }
+        
+        .forgot-password a:hover {
+            color: #764ba2;
+            /* 鼠标悬停时变为紫色 */
+            text-decoration: underline;
+            /* 鼠标悬停时显示下划线 */
+        }
+        
+        /* 注册链接容器 */
+        .register-link {
+            text-align: center;
+            /* 文字居中 */
+            margin-top: 15px;
+            /* 顶部外边距 */
+        }
+        
+        .register-link a {
+            color: #667eea;
+            /* 蓝色链接文字 */
+            text-decoration: none;
+            /* 移除下划线 */
+            font-size: 14px;
+            /* 字体大小 */
+            font-weight: 500;
+            /* 字体粗细 */
+            transition: color 0.3s ease;
+            /* 颜色过渡动画 */
+        }
+        
+        .register-link a:hover {
+            color: #764ba2;
+            /* 鼠标悬停时变为紫色 */
+            text-decoration: underline;
+            /* 鼠标悬停时显示下划线 */
+        }
+        
+        /* 响应式设计 - 移动设备适配 */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                /* 在小屏幕上减少内边距 */
+            }
+            
+            .login-header h1 {
+                font-size: 24px;
+                /* 在小屏幕上减小标题字体 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录容器 -->
+    <div class="login-container">
+        <!-- 登录头部 -->
+        <div class="login-header">
+            <h1>欢迎登录</h1>
+            <p>请输入您的账户信息</p>
+        </div>
+        
+        <!-- 登录表单 -->
+        <form id="loginForm">
+            <!-- 用户名输入组 -->
+            <div class="input-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required placeholder="请输入用户名">
+            </div>
+            
+            <!-- 密码输入组 -->
+            <div class="input-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required placeholder="请输入密码">
+            </div>
+            
+            <!-- 登录按钮 -->
+            <button type="submit" class="login-button">登录</button>
+        </form>
+        
+        <!-- 忘记密码链接 -->
+        <div class="forgot-password">
+            <a href="/forget">忘记密码？</a>
+        </div>
+        
+        <!-- 注册链接 -->
+        <div class="register-link">
+            <a href="/register">没有账户？立即注册</a>
+        </div>
+    </div>
+
+    <!-- JavaScript交互逻辑 -->
+    <script>
+        // 为登录表单添加提交事件监听器
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止表单默认提交行为
+            
+            // 获取用户名和密码输入框的值
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 简单的前端验证：检查用户名和密码是否为空
+            if (username.trim() === '' || password.trim() === '') {
+                alert('请输入用户名和密码');
+                return;
+            }
+            
+            // 这里可以添加实际的登录逻辑
+            // 例如发送请求到后端API
+            console.log('登录信息:', { username, password });
+            fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+        .then(response => response.json())  // 转成 JSON
+        .then(data => {
+            console.log(data);              // 打印完整返回
+
+            // ⭐ 读取后端返回的 code
+            if (data.msg === "success") {
+                token=data.data;
+                
+                localStorage.setItem("token", token);
+                localStorage.setItem("username",username);
+                if(data.is_admin){
+                    window.location.href = "/admin";
+                }
+                else {window.location.href = "/index";}
+            } else {
+                alert("登录失败：" + data.msg);
+            }
+        })
+        .catch(error => {
+            console.error("请求失败:", error);
+        
+});
+        });
+    </script>
+</body>
+</html>
