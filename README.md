@@ -41,7 +41,7 @@ spring/src/main/resources/application.yml
 ```bash
 pip install -r requirements.txt
 ```
-填入你的千问api-key
+在config.yaml中填入你的千问api-key
 
 ### 3. 导入数据库
 
